@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
   <app version="1">
-    <name>NetSlug</name>
-    <coder>MrBean35000vr and Chadderz</coder>
+    <name>PlayBrain</name>
+    <coder>MrBean35000vr, Chadders, & others</coder>
     <version>v0.01</version>
     <release_date>20140329000000</release_date>
     <short_description>Play local Wii games online!</short_description>
-    <long_description>This meta.xml was customized by PlayBrain. Otherwise, this would look identical to BrainSlug.</long_description>
+    <long_description>[this is a direct build of NetSlug currently, none of the features that PlayBrain will provide are here currently]
+BrainSlug is a specialised Wii disc loader which is designed to allow the loaded game to be patched. It's designed to make the process of adding functionality to Wii games much easier and more enjoyable for all. The BrainSlug channel is still very simple, it lacks any sort of user interface or even configuration file.
+    
+NetSlug was created on top of this, which is a Wii homebrew app that attempts to add online gameplay to Wii games that feature local multiplayer. It is designed primarily to add online multiplayer to New Super Mario Bros. Wii, but may be functional with other games.
+    
+This is built on top of NetSlug. Introducing PlayBrain, the definitive NetSlug mod for Wii. With support for up to 8 players, it synchronizes each player's gameplay on each Wii. The code is open-source on GitHub, allowing for modifications from other developers interested in the project.
+    
+You can make your contributions at https://github.com/jbmagination/playbrain and help out!
+
+Thank you for using PlayBrain, on behalf of all of the people who work on it, including:
+[people]
+
+We thank:
+MrBean35000vr
+Chadderz (Chadderz121)
+Nintendo
+You</long_description>
   </app>
