@@ -5,7 +5,10 @@
     <version>v0.01</version>
     <release_date>20140329000000</release_date>
     <short_description>Play local Wii games online!</short_description>
-    <long_description>[this is a direct build of NetSlug currently, none of the features that PlayBrain will provide are here currently]
+    <long_description>[this is a WIP, not all features put in description are currently available]
+[this is a WIP, not all features put in description are currently available]
+[this is a WIP, not all features put in description are currently available]
+
 BrainSlug is a specialised Wii disc loader which is designed to allow the loaded game to be patched. It's designed to make the process of adding functionality to Wii games much easier and more enjoyable for all. The BrainSlug channel is still very simple, it lacks any sort of user interface or even configuration file.
     
 NetSlug was created on top of this, which is a Wii homebrew app that attempts to add online gameplay to Wii games that feature local multiplayer. It is designed primarily to add online multiplayer to New Super Mario Bros. Wii, but may be functional with other games.
