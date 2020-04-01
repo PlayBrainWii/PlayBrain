@@ -1,8 +1,9 @@
 ###############################################################################
 # makefile
-#  by Alex Chadwick
+# by Alex Chadwick
 #
-# A makefile script for generation of the brainslug project
+# A makefile script for generation of the brainslug project, modified for
+# PlayBrain
 ###############################################################################
 
 ###############################################################################
