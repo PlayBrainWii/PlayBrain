@@ -26,11 +26,9 @@ ifeq ($(OS),Windows_NT)
   PATH := $(DEVKITPPC)/bin:$(PORTLIBS)/bin:$(PATH)
   $(info DEVKITPRO is $(DEVKITPRO))
   $(info DEVKITPPC is $(DEVKITPPC))
-  endif
-  PORTLIBS := $(DEVKITPRO)/portlibs/ppc
 else
+  PORTLIBS := $(DEVKITPRO)/portlibs/ppc
   $(info Compiling from Unix)
-
   PORTLIBS := $(DEVKITPRO)/portlibs/ppc
   $(info DEVKITPRO is $(DEVKITPRO))
   $(info DEVKITPPC is $(DEVKITPPC))
@@ -157,7 +155,7 @@ CFLAGS  += $(patsubst %,-I %,$(INC_DIRS)) \
            $(patsubst %,-I %/include,$(LIB_DIRS)) -iquote src
 
 OBJECTS := $(patsubst %.c,$(BUILD)/%.c.o,$(filter %.c,$(SRC)))
-          
+
 ifeq ($(words $(filter clean%,$(MAKECMDGOALS))),0)
 ifeq ($(words $(filter install%,$(MAKECMDGOALS))),0)
 ifeq ($(words $(filter uninstall%,$(MAKECMDGOALS))),0)
@@ -173,8 +171,8 @@ endif
 $(TARGET) : $(BUILD)/output.elf | $(BIN)
 	$(LOG)
 	-$Qmkdir -p $(dir $@)
-	$Q$(ELF2DOL) $(BUILD)/output.elf $(TARGET) 
-	
+	$Q$(ELF2DOL) $(BUILD)/output.elf $(TARGET)
+
 $(BIN)/boot.elf : $(BUILD)/output.elf | $(BIN)
 	$(LOG)
 	$Qcp $< $@
@@ -184,14 +182,14 @@ $(BIN)/boot.elf : $(BUILD)/output.elf | $(BIN)
 # Rule to make the elf file.
 $(BUILD)/output.elf : $(OBJECTS) $(LINKER) | $(BIN) $(BUILD)
 	$(LOG)
-	$Q$(LD) $(OBJECTS) $(LDFLAGS) -o $@ 
+	$Q$(LD) $(OBJECTS) $(LDFLAGS) -o $@
 
 # Rule to make intermediate directory
-$(BUILD) : 
+$(BUILD) :
 	$Qmkdir $@
 
 # Rule to make output directory
-$(BIN) : 
+$(BIN) :
 	$Qmkdir $@
 
 ###############################################################################
@@ -227,7 +225,7 @@ list  : $(LIST)
 
 # Rule to clean files.
 PHONY += clean
-clean : 
+clean :
 	$Qrm -rf $(wildcard $(BUILD) $(BIN) $(RELEASE))
 	$Q$(MAKE) -C modules clean
 

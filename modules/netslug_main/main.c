@@ -869,12 +869,11 @@ static void* recvThread_main(void *arg)
 	{
 		if (host)
 		{
-			ProcessPacket(&inPacket);
+            ProcessPacket(&inPacket);
 		}
 		else
 		{
 			struct ctrlPacket inPacket;
-
 			while(reliable_recv(communicationSock, &inPacket, sizeof(inPacket)) <= 0)
 			{
 				Console_Write("[RECV] Failure. OHHHHHH.\n");
