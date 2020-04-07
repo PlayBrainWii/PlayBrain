@@ -18,8 +18,8 @@ We aim to continue where MrBean and Chadderz left their projects off at.
 - [ ] Remove need for config.ini for connections
 
 ## Credits
-MrBean35000vr - The original NetSlug
-Chadderz121 - The original BrainSlug
-devkitPro - Their hard work for allowing people to create things like this
+- MrBean35000vr - The original NetSlug
+- Chadderz121 - The original BrainSlug
+- devkitPro - Their hard work for allowing people to create things like this
 
 
