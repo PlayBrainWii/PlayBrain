@@ -9,6 +9,7 @@ This was built off of the Wii patching engine BrainSlug, by Bean's brother, Chad
 
 We aim to continue where MrBean and Chadderz left their projects off at.
 
+*If you're interested in NetSlug and BrainSlug, you can find downloads [here](https://github.com/jbmagination/PlayBrain/releases/tag/slug).*
 ## Goals
 - [ ] 3-8 player support
 - [ ] An actual GUI interface
