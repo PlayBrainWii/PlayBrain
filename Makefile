@@ -142,6 +142,8 @@ release: $(TARGET) meta.xml icon.png
 	$Qmkdir $(RELEASE)/apps/netslug/modules
 	$Qcp -r USAGE $(RELEASE)/readme.txt
 	$Qcp config.ini $(RELEASE)/apps/netslug/config.ini
+	$Qcp meta.xml $(RELEASE)/apps/netslug/meta.xml
+	$Qcp icon.png $(RELEASE)/apps/netslug/icon.png
 	$Q$(MAKE) -C modules release RELEASE_DIR=../$(RELEASE)/apps/netslug/modules
 
 ###############################################################################
