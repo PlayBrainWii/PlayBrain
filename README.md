@@ -3,7 +3,7 @@
 *The Netplay mod for Wii.*
 
 ## What this is
-This is a continuation of MrBean35000vr's work, NetSlug, which allowed two players, one as host and one as guest, to connect and play together.
+This is a continuation of MrBean35000vr's work, NetSlug, which allowed two players, one as host and one as guest, to connect and play local games together online peer-to-peer.
 
 This was built off of the Wii patching engine BrainSlug, by Bean's brother, Chadderz (known on GitHub as Chadderz121). It patches the disc directly using C, using "modules" to make changes as needed.
 
