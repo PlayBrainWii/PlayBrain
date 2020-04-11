@@ -1,6 +1,9 @@
 # PlayBrain
 [this is not created, this is a WIP]
+
 *The NetPlay mod for Wii.*
+
+---
 
 ## What this is
 This is a continuation of MrBean35000vr's work, NetSlug, which allowed two players, one as host and one as guest, to connect and play local games together online peer-to-peer.
@@ -11,11 +14,15 @@ We aim to continue where MrBean and Chadderz left their projects off at.
 
 *If you're interested in NetSlug and BrainSlug, you can find downloads [here](https://github.com/jbmagination/PlayBrain/releases/tag/slug).*
 
+---
+
 ## Goals
 - [ ] 3-8 player support
 - [ ] An actual GUI interface (planned with libwiigui)
 - [ ] Traversal server alongside direct connections
 - [ ] Remove need for config.ini for connections
+
+---
 
 ## Credits
 - MrBean35000vr - The original NetSlug
