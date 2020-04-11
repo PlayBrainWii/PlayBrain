@@ -20,7 +20,7 @@ We aim to continue where MrBean and Chadderz left their projects off at.
 - [ ] 3-8 player support
 - [ ] An actual GUI interface (planned with libwiigui)
 - [ ] Traversal server alongside direct connections
-- [ ] Remove need for config.ini for connections
+- [ ] Remove need for configuring config.ini on PC for connections
 
 ---
 
