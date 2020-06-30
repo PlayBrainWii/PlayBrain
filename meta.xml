@@ -13,7 +13,7 @@ BrainSlug is a specialised Wii disc loader which is designed to allow the loaded
     
 NetSlug was created on top of this, which is a Wii homebrew app that attempts to add online gameplay to Wii games that feature local multiplayer. It is designed primarily to add online multiplayer to New Super Mario Bros. Wii, but may be functional with other games.
     
-This is built on top of NetSlug. Introducing PlayBrain, the definitive NetSlug mod for Wii. With support for up to 8 players, it synchronizes each player's gameplay on each Wii. The code is open-source on GitHub, allowing for modifications from other developers interested in the project.
+This is built on top of NetSlug. Introducing PlayBrain, the definitive NetPlay mod for Wii. With support for up to 8 players, it synchronizes each player's gameplay on each Wii. The code is open-source on GitHub, allowing for modifications from other developers interested in the project.
     
 You can make your contributions at https://github.com/jbmagination/playbrain and help out!
 
