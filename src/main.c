@@ -112,10 +112,14 @@ int main(void) {
 
     /* display the welcome message */
     printf("\x1b[2;0H");
+    printf("PlayBrain by JBMagination and others");
 	printf("Wii NetPlay Test Edition by MrBean35000vr and Chadderz\n");
-    printf("Based on BrainSlug Wii  v%x.%02x.%04x"
+    printf("Based on BrainSlug Wii v%x.%02x.%04x"
 #ifndef NDEBUG
         " DEBUG build"
+#endif
+#ifndef NRELEASE
+        " RELEASE build"
 #endif
         "\n",
         BSLUG_VERSION_MAJOR(BSLUG_LOADER_VERSION),

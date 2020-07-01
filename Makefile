@@ -1,8 +1,9 @@
 ###############################################################################
 # makefile
-#  by Alex Chadwick
+# by Alex Chadwick
 #
-# A makefile script for generation of the brainslug project
+# A makefile script for generation of the brainslug project, modified for
+# PlayBrain
 ###############################################################################
 
 ###############################################################################
@@ -23,22 +24,11 @@ ifeq ($(OS),Windows_NT)
 
   PORTLIBS := $(DEVKITPRO)/portlibs/ppc
   PATH := $(DEVKITPPC)/bin:$(PORTLIBS)/bin:$(PATH)
-  ifeq ($(DEVKITPRO),$(subst :, ,$(DEVKITPRO)))
-    DEVKITPRO := $(patsubst /$(firstword $(subst /, ,$(DEVKITPRO)))/%,$(firstword $(subst /, ,$(DEVKITPRO))):/%,$(DEVKITPRO))
-    $(info DEVKITPRO corrected to $(DEVKITPRO))
-  else
-    $(info DEVKITPRO is $(DEVKITPRO))
-  endif
-  PORTLIBS := $(DEVKITPRO)/portlibs/ppc
-  ifeq ($(DEVKITPPC),$(subst :, ,$(DEVKITPPC)))
-    DEVKITPPC := $(patsubst /$(firstword $(subst /, ,$(DEVKITPPC)))/%,$(firstword $(subst /, ,$(DEVKITPPC))):/%,$(DEVKITPPC))
-    $(info DEVKITPPC corrected to $(DEVKITPPC))
-  else
-    $(info DEVKITPPC is $(DEVKITPPC))
-  endif
+  $(info DEVKITPRO is $(DEVKITPRO))
+  $(info DEVKITPPC is $(DEVKITPPC))
 else
+  PORTLIBS := $(DEVKITPRO)/portlibs/ppc
   $(info Compiling from Unix)
-
   PORTLIBS := $(DEVKITPRO)/portlibs/ppc
   $(info DEVKITPRO is $(DEVKITPRO))
   $(info DEVKITPPC is $(DEVKITPPC))
@@ -152,6 +142,8 @@ release: $(TARGET) meta.xml icon.png
 	$Qmkdir $(RELEASE)/apps/netslug/modules
 	$Qcp -r USAGE $(RELEASE)/readme.txt
 	$Qcp config.ini $(RELEASE)/apps/netslug/config.ini
+	$Qcp meta.xml $(RELEASE)/apps/netslug/meta.xml
+	$Qcp icon.png $(RELEASE)/apps/netslug/icon.png
 	$Q$(MAKE) -C modules release RELEASE_DIR=../$(RELEASE)/apps/netslug/modules
 
 ###############################################################################
@@ -165,7 +157,7 @@ CFLAGS  += $(patsubst %,-I %,$(INC_DIRS)) \
            $(patsubst %,-I %/include,$(LIB_DIRS)) -iquote src
 
 OBJECTS := $(patsubst %.c,$(BUILD)/%.c.o,$(filter %.c,$(SRC)))
-          
+
 ifeq ($(words $(filter clean%,$(MAKECMDGOALS))),0)
 ifeq ($(words $(filter install%,$(MAKECMDGOALS))),0)
 ifeq ($(words $(filter uninstall%,$(MAKECMDGOALS))),0)
@@ -181,8 +173,8 @@ endif
 $(TARGET) : $(BUILD)/output.elf | $(BIN)
 	$(LOG)
 	-$Qmkdir -p $(dir $@)
-	$Q$(ELF2DOL) $(BUILD)/output.elf $(TARGET) 
-	
+	$Q$(ELF2DOL) $(BUILD)/output.elf $(TARGET)
+
 $(BIN)/boot.elf : $(BUILD)/output.elf | $(BIN)
 	$(LOG)
 	$Qcp $< $@
@@ -192,14 +184,14 @@ $(BIN)/boot.elf : $(BUILD)/output.elf | $(BIN)
 # Rule to make the elf file.
 $(BUILD)/output.elf : $(OBJECTS) $(LINKER) | $(BIN) $(BUILD)
 	$(LOG)
-	$Q$(LD) $(OBJECTS) $(LDFLAGS) -o $@ 
+	$Q$(LD) $(OBJECTS) $(LDFLAGS) -o $@
 
 # Rule to make intermediate directory
-$(BUILD) : 
+$(BUILD) :
 	$Qmkdir $@
 
 # Rule to make output directory
-$(BIN) : 
+$(BIN) :
 	$Qmkdir $@
 
 ###############################################################################
@@ -235,7 +227,7 @@ list  : $(LIST)
 
 # Rule to clean files.
 PHONY += clean
-clean : 
+clean :
 	$Qrm -rf $(wildcard $(BUILD) $(BIN) $(RELEASE))
 	$Q$(MAKE) -C modules clean
 
