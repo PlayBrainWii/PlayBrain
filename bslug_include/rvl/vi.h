@@ -74,7 +74,6 @@ typedef struct GXRenderModeObj {
     /* 0x39 implicit padding */    
 } GXRenderModeObj;
 
-void __VIRetraceHandler(int isr, void *context);
 void VIInit(void);
 void VIWaitForRetrace(void);
 void VIConfigure(const GXRenderModeObj *mode);

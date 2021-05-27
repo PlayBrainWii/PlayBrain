@@ -31,10 +31,6 @@
 
 #define BSLUG_LOADER_VERSION BSLUG_VERSION(0, 1, 2)
 
-#define APP_PATH "sd:/apps/netslug"
-
 extern event_t main_event_fat_loaded;
-extern int host_ip;
-extern int port;
 
 #endif /* MAIN_H_ */

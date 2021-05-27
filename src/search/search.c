@@ -69,7 +69,7 @@ bool search_has_info;
 
 static fsm_t *search_fsm = NULL;
 
-static const char search_path[] = APP_PATH  "/symbols";
+static const char search_path[] = "sd:/bslug/symbols";
 
 static void *search_symbol__start;
 
@@ -92,7 +92,7 @@ bool Search_RunBackground(void) {
     
     ret = LWP_CreateThread(
         &thread, &Search_Main,
-        NULL, NULL, 32 * 1024, THREAD_PRIO_IO);
+        NULL, NULL, 0, THREAD_PRIO_IO);
         
     if (ret) {
         errno = ENOMEM;
@@ -300,8 +300,6 @@ static bool Search_BuildFSM(void) {
     
     result = true;
 exit_error:
-	if (!result)
-		printf("Search_BuildFSM: exit_error\n");
     if (fsm_final != NULL)
         FSM_Free(fsm_final);
     return result;

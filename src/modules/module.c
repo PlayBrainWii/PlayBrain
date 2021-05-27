@@ -80,7 +80,7 @@ static bslug_loader_entry_t *module_entries = NULL;
 static size_t module_entries_count = 0;
 static size_t module_entries_capacity = 0;
 
-static const char module_path[] = APP_PATH "/modules";
+static const char module_path[] = "sd:/bslug/modules";
 
 static void *Module_Main(void *arg);
 static void *Module_ListAllocate(
@@ -100,7 +100,7 @@ static module_metadata_t *Module_MetadataRead(
 static bool Module_ElfLoadSection(
     const Elf *elf, Elf_Scn *scn, const Elf32_Shdr *shdr, void *destination);
 static void Module_ElfLoadSymbols(
-    size_t shndx, const const void *destination, 
+    size_t shndx, const void *destination, 
     Elf32_Sym *symtab, size_t symtab_count);
 static bool Module_ElfLink(
     size_t index, Elf *elf, size_t shndx, void *destination,
@@ -132,7 +132,7 @@ bool Module_RunBackground(void) {
     
     ret = LWP_CreateThread(
         &thread, &Module_Main,
-        NULL, NULL, 32 * 1024, THREAD_PRIO_IO);
+        NULL, NULL, 0, THREAD_PRIO_IO);
         
     if (ret) {
         errno = ENOMEM;
@@ -821,7 +821,7 @@ static bool Module_ElfLoadSection(
 }
 
 static void Module_ElfLoadSymbols(
-        size_t shndx, const const void *destination,
+        size_t shndx, const void *destination,
         Elf32_Sym *symtab, size_t symtab_count) {
     
     size_t i;
@@ -1201,23 +1201,14 @@ static bool Module_LinkModuleElf(size_t index, Elf *elf, uint8_t **space) {
     bool result = false;
     
     if (!Module_LoadElfSymtab(elf, &symtab, &symtab_count, &symtab_strndx))
-	{
-		printf("\n1");
         goto exit_error;
-	}
     
     assert(symtab != NULL);
     
     if (elf_getshdrnum(elf, &section_count) != 0)
-	{
-		printf("\n2");
         goto exit_error;
-	}
     if (elf_getshdrstrndx(elf, &shstrndx) != 0)
-	{
-		printf("\n3");
         goto exit_error;
-	}
     
     destinations = malloc(sizeof(uint8_t *) * section_count);
     
@@ -1246,10 +1237,8 @@ static bool Module_LinkModuleElf(size_t index, Elf *elf, uint8_t **space) {
                 continue;
             } else if (strcmp(name, ".bslug.load") == 0) {
                 if (entries != NULL)
-				{
-					printf("\n4");
                     goto exit_error;
-				}   
+                    
                 entries_count = shdr->sh_size / sizeof(bslug_loader_entry_t);
                 entries = Module_ListAllocate(
                     &module_entries, sizeof(bslug_loader_entry_t),
@@ -1257,16 +1246,11 @@ static bool Module_LinkModuleElf(size_t index, Elf *elf, uint8_t **space) {
                     &module_entries_count, MODULE_ENTRIES_CAPACITY_DEFAULT);
                     
                 if (entries == NULL)
-				{
-					printf("\n5");
                     goto exit_error;
-				}
+                
                 destinations[elf_ndxscn(scn)] = (uint8_t *)entries;
                 if (!Module_ElfLoadSection(elf, scn, shdr, entries))
-				{
-					printf("\n6");
                     goto exit_error;
-				}
                 Module_ElfLoadSymbols(
                     elf_ndxscn(scn), entries, symtab, symtab_count);
             } else {
@@ -1281,10 +1265,7 @@ static bool Module_LinkModuleElf(size_t index, Elf *elf, uint8_t **space) {
                 
                 assert(*space != NULL);
                 if (!Module_ElfLoadSection(elf, scn, shdr, *space))
-				{
-					printf("\n7");
                     goto exit_error;
-				}
                 Module_ElfLoadSymbols(
                     elf_ndxscn(scn), *space, symtab, symtab_count);
             }
@@ -1292,10 +1273,7 @@ static bool Module_LinkModuleElf(size_t index, Elf *elf, uint8_t **space) {
     }
     
     if (entries == NULL)
-	{
-		printf("\n8");
         goto exit_error;
-	}
     
     for (scn = elf_nextscn(elf, NULL);
          scn != NULL;
@@ -1314,10 +1292,7 @@ static bool Module_LinkModuleElf(size_t index, Elf *elf, uint8_t **space) {
             if (!Module_ElfLink(
                     index, elf, elf_ndxscn(scn), destinations[elf_ndxscn(scn)],
                     symtab, symtab_count, symtab_strndx, true))
-			{
-				printf("\n9");
                 goto exit_error;
-			}
         }
     }
         

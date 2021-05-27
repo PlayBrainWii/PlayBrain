@@ -143,10 +143,4 @@
             2C1E0000 41820198 281D0007
         </data>
     </symbol>
-    <!-- an old version of this is longer -->
-    <symbol name="IPCInterruptHandler" size="0x1ac" offset="0x24" >
-        <data>
-            70600014 28000014 40820010
-        </data>
-    </symbol>
 </symbols>

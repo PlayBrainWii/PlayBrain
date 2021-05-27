@@ -37,8 +37,8 @@ typedef struct OSThreadQueue_t OSThreadQueue_t;
 typedef struct OSMutex_t OSMutex_t;
 typedef void *(*OSThreadEntry_t)(void *argument);
 
-#define THREAD_PRIORITY_LOWEST 31
-#define THREAD_PRIORITY_HIGHEST 0
+#define THREAD_PRIORITY_LOWEST 0
+#define THREAD_PRIORITY_HIGHEST 31
 
 static inline void OSInitThreadQueue(OSThreadQueue_t *queue);
 OSThread_t *OSGetCurrentThread(void);
@@ -50,11 +50,8 @@ void OSExitThread(void *exit_code);
 void OSCancelThread(OSThread_t *thread);
 void OSSleepThread(OSThreadQueue_t *queue);
 void OSWakeupThread(OSThreadQueue_t *queue);
-int OSResumeThread(OSThread_t *thread);
 bool OSSetThreadPriority(OSThread_t *thread, int priority);
 static inline int OSGetThreadPriority(OSThread_t *thread);
-
-void DecrementerExceptionCallback(int isr, void *context);
 
 struct OSThreadQueue_t {
     OSThread_t *_unknown0;

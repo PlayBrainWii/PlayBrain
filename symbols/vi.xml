@@ -36,9 +36,4 @@
             93C10008 A064000A A0840006 88AA0000
         </data>
     </symbol>
-    <symbol name="__VIRetraceHandler" size="0x74c" offset="0x40">
-        <data>
-            3c80cc00 a0642034 54600421
-        </data>
-    </symbol>
 </symbols>

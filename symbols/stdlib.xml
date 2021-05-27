@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Symbols in the standard stdlib.h header -->
-<symbols>
-    <symbol name="rand" size="0x24" offset="0x8" >
-        <data>
-            3803660d 7c6401d6 3c633c6f 3803f35f 900d
-        </data>
-    </symbol>
-</symbols>

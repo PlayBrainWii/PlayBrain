@@ -1,9 +1,8 @@
 ###############################################################################
 # makefile
-# by Alex Chadwick
+#  by Alex Chadwick
 #
-# A makefile script for generation of the brainslug project, modified for
-# PlayBrain
+# A makefile script for generation of the brainslug project
 ###############################################################################
 
 ###############################################################################
@@ -15,37 +14,15 @@ C := ,
 ifeq ($(strip $(DEVKITPPC)),)
   $(error "Please set DEVKITPPC in your environment. export DEVKITPPC=<path to>devkitPPC")
 endif
-ifeq ($(strip $(DEVKITPRO)),)
-  $(error "Please set DEVKITPRO in your environment. export DEVKITPRO=<path to>devkitPRO")
-endif
 
-ifeq ($(OS),Windows_NT)
-  $(info Compiling from $(OS))
+BSLUGDIR ?= $(CURDIR)/bslug
 
-  PORTLIBS := $(DEVKITPRO)/portlibs/ppc
-  PATH := $(DEVKITPPC)/bin:$(PORTLIBS)/bin:$(PATH)
-  $(info DEVKITPRO is $(DEVKITPRO))
-  $(info DEVKITPPC is $(DEVKITPPC))
-else
-  PORTLIBS := $(DEVKITPRO)/portlibs/ppc
-  $(info Compiling from Unix)
-  PORTLIBS := $(DEVKITPRO)/portlibs/ppc
-  $(info DEVKITPRO is $(DEVKITPRO))
-  $(info DEVKITPPC is $(DEVKITPPC))
-endif
+include $(DEVKITPPC)/base_tools
 
-###############################################################################
-# Compiler settings
+PORTLIBS := $(DEVKITPRO)/portlibs/ppc
 
-# The toolchain to use.
-PREFIX  ?= powerpc-eabi-
-# Tools to use
-AS      := $(PREFIX)as
-LD      := $(PREFIX)g++
-CC      := $(PREFIX)g++
-OBJDUMP := $(PREFIX)objdump
-OBJCOPY := $(PREFIX)objcopy
 ELF2DOL ?= elf2dol
+LD := $(CC)
 
 # -O2: optimise lots
 # -Wl$C--gc-sections: remove unneeded symbols
@@ -108,18 +85,15 @@ MAP    ?= $(BIN)/boot.map
 # Variable init
 
 # The names of libraries to use.
-LIBS     := ogc mxml fat bte wiiuse
+LIBS     := ogc mxml fat
 # The source files to compile.
 SRC      :=
 # Phony targets
 PHONY    :=
 # Include directories
-INC_DIRS := .
+INC_DIRS := . $(DEVKITPRO)/libogc/include $(PORTLIBS)/include
 # Library directories
-LIB_DIRS := $(DEVKITPPC) $(DEVKITPPC)/powerpc-eabi \
-            $(DEVKITPRO)/libogc $(DEVKITPRO)/libogc/lib/wii \
-            $(wildcard $(DEVKITPPC)/lib/gcc/powerpc-eabi/*) \
-            $(PORTLIBS) $(PORTLIBS)/wii
+LIB_DIRS :=  $(DEVKITPRO)/libogc/lib/wii $(PORTLIBS)/lib
 
 ###############################################################################
 # Rule to make everything.
@@ -127,6 +101,28 @@ PHONY += all
 
 all : $(TARGET) $(BIN)/boot.elf
 
+###############################################################################
+# Install rule
+
+# Rule to install bslug.
+PHONY += install
+install : bslug_include modules symbols bslug.ld  bslug_elf.ld bslug.mk
+	$(LOG)
+	$(addprefix $Qrm -rf ,$(wildcard $(BSLUGDIR)))
+	$Qmkdir $(BSLUGDIR)
+	$Qcp -r bslug_include $(BSLUGDIR)/include
+	$Q$(MAKE) -C modules install BSLUGDIR=$(BSLUGDIR)
+	$Qcp -r symbols $(BSLUGDIR)
+	$Qcp -r bslug.ld $(BSLUGDIR)
+	$Qcp -r bslug_elf.ld $(BSLUGDIR)
+	$Qcp -r bslug.mk $(BSLUGDIR)
+
+# Rule to install bslug.
+PHONY += uninstall
+uninstall : 
+	$(LOG)
+	$(addprefix $Qrm -rf ,$(wildcard $(BSLUGDIR)))
+	
 ###############################################################################
 # Release rules
 
@@ -136,15 +132,14 @@ release: $(TARGET) meta.xml icon.png
 	$(addprefix $Qrm -rf ,$(wildcard $(RELEASE)))
 	$Qmkdir $(RELEASE)
 	$Qmkdir $(RELEASE)/apps
-	$Qmkdir $(RELEASE)/apps/netslug
-	$Qcp -r $(TARGET) $(RELEASE)/apps/netslug
-	$Qcp -r symbols $(RELEASE)/apps/netslug
-	$Qmkdir $(RELEASE)/apps/netslug/modules
+	$Qmkdir $(RELEASE)/apps/brainslug
+	$Qcp -r $(TARGET) $(RELEASE)/apps/brainslug
+	$Qcp -r meta.xml $(RELEASE)/apps/brainslug
+	$Qcp -r icon.png $(RELEASE)/apps/brainslug
+	$Qmkdir $(RELEASE)/bslug
+	$Qcp -r symbols $(RELEASE)/bslug
+	$Qmkdir $(RELEASE)/bslug/modules
 	$Qcp -r USAGE $(RELEASE)/readme.txt
-	$Qcp config.ini $(RELEASE)/apps/netslug/config.ini
-	$Qcp meta.xml $(RELEASE)/apps/netslug/meta.xml
-	$Qcp icon.png $(RELEASE)/apps/netslug/icon.png
-	$Q$(MAKE) -C modules release RELEASE_DIR=../$(RELEASE)/apps/netslug/modules
 
 ###############################################################################
 # Recursive rules
@@ -154,14 +149,14 @@ include src/makefile.mk
 LDFLAGS += $(patsubst %,-l %,$(LIBS)) $(patsubst %,-l %,$(LIBS)) \
            $(patsubst %,-L %,$(LIB_DIRS)) $(patsubst %,-L %/lib,$(LIB_DIRS))
 CFLAGS  += $(patsubst %,-I %,$(INC_DIRS)) \
-           $(patsubst %,-I %/include,$(LIB_DIRS)) -iquote src
+           -iquote src
 
 OBJECTS := $(patsubst %.c,$(BUILD)/%.c.o,$(filter %.c,$(SRC)))
-
+          
 ifeq ($(words $(filter clean%,$(MAKECMDGOALS))),0)
 ifeq ($(words $(filter install%,$(MAKECMDGOALS))),0)
 ifeq ($(words $(filter uninstall%,$(MAKECMDGOALS))),0)
-  include $(patsubst %.c,$(BUILD)/%.c.d,$(filter %.c,$(SRC)))
+  -include $(patsubst %.c,$(BUILD)/%.c.d,$(filter %.c,$(SRC)))
 endif
 endif
 endif
@@ -173,8 +168,8 @@ endif
 $(TARGET) : $(BUILD)/output.elf | $(BIN)
 	$(LOG)
 	-$Qmkdir -p $(dir $@)
-	$Q$(ELF2DOL) $(BUILD)/output.elf $(TARGET)
-
+	$Q$(ELF2DOL) $(BUILD)/output.elf $(TARGET) 
+	
 $(BIN)/boot.elf : $(BUILD)/output.elf | $(BIN)
 	$(LOG)
 	$Qcp $< $@
@@ -184,14 +179,14 @@ $(BIN)/boot.elf : $(BUILD)/output.elf | $(BIN)
 # Rule to make the elf file.
 $(BUILD)/output.elf : $(OBJECTS) $(LINKER) | $(BIN) $(BUILD)
 	$(LOG)
-	$Q$(LD) $(OBJECTS) $(LDFLAGS) -o $@
+	$Q$(LD) $(OBJECTS) $(LDFLAGS) -o $@ 
 
 # Rule to make intermediate directory
-$(BUILD) :
+$(BUILD) : 
 	$Qmkdir $@
 
 # Rule to make output directory
-$(BIN) :
+$(BIN) : 
 	$Qmkdir $@
 
 ###############################################################################
@@ -227,9 +222,8 @@ list  : $(LIST)
 
 # Rule to clean files.
 PHONY += clean
-clean :
+clean : 
 	$Qrm -rf $(wildcard $(BUILD) $(BIN) $(RELEASE))
-	$Q$(MAKE) -C modules clean
 
 ###############################################################################
 # Phony targets

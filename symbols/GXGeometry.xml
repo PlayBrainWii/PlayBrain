@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Symbols in the rvl/GXGeometry.h header -->
-<symbols>
-    <symbol name="GXBegin" size="0x14c" offset="0x4c">
-        <data>
-            3c60cc01 38000098 38c00000 a0a70004 
-        </data>
-    </symbol>
-</symbols>
