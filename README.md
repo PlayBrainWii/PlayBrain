@@ -22,6 +22,7 @@ We aim to continue where MrBean and Chadderz left their projects off at.
 - [ ] Traversal server alongside direct connections
 - [ ] Remove need for configuring config.ini on PC for connections
 - [ ] Add support for USB backups and burned discs
+- [ ] Save file synchronization
 
 ---
 
