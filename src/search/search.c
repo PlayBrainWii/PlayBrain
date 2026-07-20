@@ -300,8 +300,6 @@ static bool Search_BuildFSM(void) {
     
     result = true;
 exit_error:
-	if (!result)
-		printf("Search_BuildFSM: exit_error\n");
     if (fsm_final != NULL)
         FSM_Free(fsm_final);
     return result;

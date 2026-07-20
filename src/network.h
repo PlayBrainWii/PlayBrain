@@ -40,7 +40,7 @@
 #define  SO_ERROR			0x1007    /* get error status and clear */
 #define  SO_TYPE			0x1008    /* get socket type */
 
-s32 net_ip_top_fd;
+extern s32 net_ip_top_fd;
 
 /*
  * Structure used for manipulating linger option.

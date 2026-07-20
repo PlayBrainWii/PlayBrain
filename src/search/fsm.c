@@ -197,15 +197,22 @@ fsm_t *FSM_Create(symbol_index_t symbol_index) {
                     if (search == queue2_free) {
                         if (queue2_free == queue2_end) {
                             fsm_node_build_queue_t *tmp;
+                            ptrdiff_t search_offset = search - queue2;
                             
+                            ptrdiff_t free_offset = queue2_free - queue2;
+                            ptrdiff_t end_offset = queue2_end - queue2;
+
                             tmp = realloc(
                                 queue2, (queue2_end - queue2) * 2 *
                                 sizeof(fsm_node_build_queue_t));
                             if (tmp == NULL)
                                 goto exit_error;
-                            queue2_end = tmp + ((queue2_end - queue2) * 2);
-                            queue2_free = tmp + (queue2_free - queue2);
+                            
+                            queue2_end = tmp + (end_offset * 2);
+                            queue2_free = tmp + free_offset;
                             queue2 = tmp;
+
+                            search = queue2 + search_offset;
                         }
                         
                         queue2_free++;
@@ -258,6 +265,7 @@ fsm_t *FSM_Create(symbol_index_t symbol_index) {
                     if (search == queue1_free) {
                         if (queue1_free == queue1_end) {
                             fsm_node_build_queue_t *tmp;
+                            ptrdiff_t search_offset = search - queue1;
                             
                             tmp = realloc(
                                 queue1, (queue1_end - queue1) * 2 *
@@ -267,6 +275,8 @@ fsm_t *FSM_Create(symbol_index_t symbol_index) {
                             queue1_end = tmp + ((queue1_end - queue1) * 2);
                             queue1_free = tmp + (queue1_free - queue1);
                             queue1 = tmp;
+
+                            search = queue1 + search_offset;
                         }
                         
                         queue1_free++;

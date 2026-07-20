@@ -33,5 +33,6 @@
 #define RAND_MAX 65535
 
 int rand(void);
+double atof (const char* str);
 
 #endif /* _STDLIB_H_ */

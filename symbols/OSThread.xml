@@ -37,13 +37,12 @@
             B00402C8 93C402DC 80BE0000
         </data>
     </symbol>
-	<!-- New version adds a nop... -->
     <symbol name="OSWakeupThread" size="0xf4" offset="0x30" >
         <data>
             48000084 808802E0 2C040000 4082000C
         </data>
     </symbol>
-	<symbol name="OSWakeupThread" size="0xf8" offset="0x34" >
+    <symbol name="OSWakeupThread" size="0xf8" offset="0x34" >
         <data>
             60000000 808802E0 2C040000 4082000C
         </data>
@@ -53,7 +52,7 @@
             801D02D4 7C7F1B78 7C00F000
         </data>
     </symbol>
-	<symbol name="OSResumeThread" size="0x298" offset="0x44" >
+    <symbol name="OSResumeThread" size="0x298" offset="0x44" >
 		<data>
 			A01D02C8 2C000004 418200B0 4080020C
 		</data>

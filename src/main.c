@@ -34,6 +34,7 @@
 #include <ogc/lwp.h>
 #include <ogc/system.h>
 #include <ogc/video.h>
+#include <gccore.h>
 #include <sdcard/wiisd_io.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -57,20 +58,25 @@ static void ConnectGUEST(void);
 int host_ip = 0xc0a80121;
 int port = 10000;
 
+short current_running_ios = 0; 
+
 int main(void) {
     int ret;
     void *frame_buffer = NULL;
-    GXRModeObj *rmode = NULL;   
-	
+    GXRModeObj *rmode = NULL;
+    
     /* The game's boot loader is statically loaded at 0x81200000, so we'd better
      * not start mallocing there! */
     SYS_SetArena1Hi((void *)0x81200000);
-	/* initialise Wii Remotes?! */
+
+    /* initialise Wii Remotes?! */
 	WPAD_Init();
 	settings_init();
-	
+
     /* initialise all subsystems */
     if (!Event_Init(&main_event_fat_loaded))
+        goto exit_error;
+    if (!IOSApploader_Init())
         goto exit_error;
     if (!Apploader_Init())
         goto exit_error;
@@ -78,6 +84,8 @@ int main(void) {
         goto exit_error;
     if (!Search_Init())
         goto exit_error;
+
+    current_running_ios = *(short*)0x80003140;
     
     /* main thread is UI, so set thread prior to UI */
     LWP_SetThreadPriority(LWP_GetSelf(), THREAD_PRIO_UI);
@@ -93,14 +101,6 @@ int main(void) {
     console_init(
         frame_buffer, 20, 20, rmode->fbWidth, rmode->xfbHeight,
         rmode->fbWidth * VI_DISPLAY_PIX_SZ);
-
-    /* spawn lots of worker threads to do stuff */
-    if (!Apploader_RunBackground())
-        goto exit_error;
-    if (!Module_RunBackground())
-        goto exit_error;
-    if (!Search_RunBackground())
-        goto exit_error;
         
     VIDEO_Configure(rmode);
     VIDEO_SetNextFramebuffer(frame_buffer);
@@ -112,14 +112,10 @@ int main(void) {
 
     /* display the welcome message */
     printf("\x1b[2;0H");
-    printf("PlayBrain by JBMagination and others");
-	printf("Wii NetPlay Test Edition by MrBean35000vr and Chadderz\n");
-    printf("Based on BrainSlug Wii v%x.%02x.%04x"
+    printf("Wii NetPlay Test Edition by MrBean35000vr and Chadderz\n");
+    printf("Based on BrainSlug Wii  v%x.%02x.%04x"
 #ifndef NDEBUG
         " DEBUG build"
-#endif
-#ifndef NRELEASE
-        " RELEASE build"
 #endif
         "\n",
         BSLUG_VERSION_MAJOR(BSLUG_LOADER_VERSION),
@@ -127,7 +123,7 @@ int main(void) {
         BSLUG_VERSION_REVISION(BSLUG_LOADER_VERSION));
     printf(" by Chadderz\n\n");
 
-	printf("This software will attempt to patch the inserted disc for NetPlay.\n"
+    printf("This software will attempt to patch the inserted disc for NetPlay.\n"
 		"This is an extremely early build! It probably doesn't work with many games!\n"
 		"It is currently designed primarily for New Super Mario Bros. Wii, and works\nreasonably well.\n"
 		"It would be best to be in verbal contact with the other players to work out if\na desync has occurred.\n"
@@ -135,7 +131,48 @@ int main(void) {
 		"All settings, including host IP and port, should be set manually in the\n" APP_PATH "/config.ini file.\n"
 		"Currently, only two players are supported.\n\n");
 
-   
+    /* spawn lots of worker threads to do stuff */
+    if (!IOSApploader_RunBackground())
+        goto exit_error;
+        
+    printf("Waiting for game disk...\n");
+    Event_Wait(&apploader_event_got_disc_id);
+    Event_Wait(&apploader_event_got_ios);
+
+    settings_load();
+
+    // Found IOS, reload into that IOS:
+    printf("Game ID: %.4s on Version %d and IOS%d\nMake sure all players use the same version!\n\nreloading ... ", os0->disc.gamename, (int)os0->disc.gamever + 1, _apploader_game_ios);
+    int rval = IOS_ReloadIOS(_apploader_game_ios);
+
+    if (rval < 0) {
+        // IOS reload failed, the needed IOS is probably not installed. 
+
+        printf("\nIt looks like reloading to IOS%d failed (error %d). Maybe it is missing?\n", _apploader_game_ios, rval);
+        printf("Trying to boot the game anyways (under IOS%d), but it might not work correctly.\n", current_running_ios);
+
+        if (!Apploader_RunBackground(1))    // 1 = make the game believe it runs under the correct IOS.
+            goto exit_error;
+
+    }
+    else {
+        // IOS reload successful, wait for IOS to load up. 
+        printf("waiting ... ");
+        while (*(short*)0x80003140 != _apploader_game_ios);
+        printf("done.\n");
+
+        if (!Apploader_RunBackground(0))    // 0 = no need to fool, we are running on the correct IOS.
+            goto exit_error;
+
+    }
+
+    // After the IOS reload, run the rest of the background threads. 
+    if (!Module_RunBackground())
+        goto exit_error;
+    if (!Search_RunBackground())
+        goto exit_error;
+
+       
     if (!__io_wiisd.startup() || !__io_wiisd.isInserted()) {
         printf("Please insert an SD card.\n\n");
         do {
@@ -150,12 +187,7 @@ int main(void) {
     }
     
     Event_Trigger(&main_event_fat_loaded);
-	
-	settings_load();
-    
-    printf("Waiting for game disk...\n");
-    Event_Wait(&apploader_event_disk_id);
-	printf("Game ID: %.4s Version %d\nMake sure all players use the same version!\n", os0->disc.gamename, (int)os0->disc.gamever + 1);
+
         
     printf("Loading modules...\n");
     Event_Wait(&module_event_list_loaded);
@@ -181,9 +213,9 @@ int main(void) {
         Main_PrintSize(module_list_size);
         puts(" total.");
     }
-    
-	printf("\nPlease wait while the game is patched.\nIf nothing happens after about 2 minutes, reset the machine!\n");
 
+    printf("\nPlease wait while the game is patched.\nIf nothing happens after about 2 minutes, reset the machine!\n");
+    
     Event_Wait(&apploader_event_complete);
     Event_Wait(&module_event_complete);
     fatUnmount("sd");
@@ -205,8 +237,8 @@ int main(void) {
             while (SYS_ResetButtonDown())
                 VIDEO_WaitVSync();
         }
-		
-		printf("\nReady! Please select on your Wii Remote:\nA button: Host, B button: Guest\n(Make sure the host goes first).\n");
+
+        printf("\nReady! Please select on your Wii Remote:\nA button: Host, B button: Guest\n(Make sure the host goes first).\n");
 		while(1)
 		{
 			WPAD_ScanPads();
@@ -315,7 +347,7 @@ static void ConnectHOST(void)
 	{
 		goto error;
 	}
-	
+
 	int on = 0;
 	Mynet_setsockopt(communicationSock, 0, TCP_NODELAY, (char *) &on, sizeof(on));
 
@@ -359,11 +391,12 @@ error:
 	printf("\nWell, that didn't work! Press RESET to get us out of here and try again.\nIf you don't have a RESET button, I feel sorry for you.\n");
 	while (!SYS_ResetButtonDown())
         VIDEO_WaitVSync();
-    while (SYS_ResetButtonDown())
+    while (SYS_ResetButtonDown()) {
         VIDEO_WaitVSync();
-	exit(0);
-	
-	
+	    exit(0);
+    }
+
+
 }
 
 static void ConnectGUEST(void)
@@ -391,7 +424,7 @@ if(Mynet_init())
 	{
 		goto error;
 	}
-	
+
 	int on = 0;
 	Mynet_setsockopt(sock, 0, TCP_NODELAY, (char *) &on, sizeof(on));
 
@@ -439,7 +472,8 @@ error:
 	printf("\nWell, that didn't work! Press RESET to get us out of here and try again.\nIf you don't have a RESET button, I feel sorry for you.\n");
 	while (!SYS_ResetButtonDown())
         VIDEO_WaitVSync();
-    while (SYS_ResetButtonDown())
+    while (SYS_ResetButtonDown()) {
         VIDEO_WaitVSync();
-	exit(0);
+	    exit(0);
+    }
 }

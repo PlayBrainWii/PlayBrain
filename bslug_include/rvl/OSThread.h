@@ -37,8 +37,8 @@ typedef struct OSThreadQueue_t OSThreadQueue_t;
 typedef struct OSMutex_t OSMutex_t;
 typedef void *(*OSThreadEntry_t)(void *argument);
 
-#define THREAD_PRIORITY_LOWEST 31
-#define THREAD_PRIORITY_HIGHEST 0
+#define THREAD_PRIORITY_LOWEST 0
+#define THREAD_PRIORITY_HIGHEST 31
 
 static inline void OSInitThreadQueue(OSThreadQueue_t *queue);
 OSThread_t *OSGetCurrentThread(void);
