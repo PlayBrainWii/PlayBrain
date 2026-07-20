@@ -53,6 +53,16 @@ uninstall :
 	$(addprefix $Qrm -rf ,$(wildcard $(BSLUGDIR)/modules))
 
 ###############################################################################
+# Release rule
+
+PHONY += release
+release: $(addsuffix _module_release,$(MODULES))
+
+%_module_release: %_module
+	$(LOG)
+	$Qcp $*/bin/$*.mod $(RELEASE_DIR)/$*.mod
+
+###############################################################################
 # Clean rule
 
 # Rule to clean files.
